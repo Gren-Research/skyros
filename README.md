@@ -2,7 +2,7 @@
 
 **Persistent AI agents that remember.**
 
-*A Gren Research project.* **Status: design phase, no code yet.**
+*A Gren Research project.* **Status: early development; nothing to install yet.**
 
 Every AI session starts from a blank slate. Skyros is a **harness for persistent agents**: each agent has its own identity, memory, skills and permissions, and starts every session with everything it has learned about you, your work, and itself. You can run many agents side by side: a personal assistant that handles your work, a software developer that knows the codebase and what it did yesterday, and whatever else you imagine.
 
