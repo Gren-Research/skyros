@@ -3,7 +3,7 @@
 Binding rules for every AI agent working on this repository. Read this at the start of every session.
 Humans follow the same rules; [CONTRIBUTING.md](CONTRIBUTING.md) explains the reasoning.
 
-> **Status:** design phase, no code yet. The stack is decided in [RFC 0003](docs/rfcs/0003-stack.md); build and test commands go in §8 once code exists.
+> **Status:** early development. The stack is decided in [RFC 0003](docs/rfcs/0003-stack.md); commands are in §8.
 
 ## 1. Prime directives
 
@@ -48,7 +48,7 @@ The Reviewer sets the tier from the files changed, not from the label.
 A PR is `risk:high` if it touches:
 
 - `.github/`, `.gitignore`, `.gitattributes`, `AGENTS.md`, `CLAUDE.md`, `CONTRIBUTING.md`, `SECURITY.md`, `LICENSE`, `docs/governance/`, `docs/rfcs/`
-- dependencies: manifests or lockfiles
+- dependencies: manifests, lockfiles or package-manager config (`.npmrc`)
 - authentication, secrets handling, permissions, sandboxing, network or filesystem access given to agents, or execution of untrusted input
 - memory storage, privacy, encryption or deletion
 - any agent's prompts, charter or permissions (**no agent reviews changes to itself**)
@@ -92,4 +92,14 @@ node scripts/as-app.mjs skyros-builder git push
 
 The Reviewer uses `skyros-reviewer`. Builders commit as `skyros-builder[bot] <340449339+skyros-builder[bot]@users.noreply.github.com>`.
 
-Build, test, lint and format commands go here when the first code lands (stack: [RFC 0003](docs/rfcs/0003-stack.md)).
+**Build and test.** Node 24 and npm workspaces ([RFC 0003](docs/rfcs/0003-stack.md)). Run from the repository root:
+
+```sh
+npm ci             # install exactly what the lockfile says
+npm run verify     # all checks below; must pass before you open a PR
+npm run check      # Biome format and lint check (npm run fix applies fixes)
+npm run typecheck  # tsc, type-check only
+npm test           # Vitest
+```
+
+Node runs the TypeScript sources directly by stripping types, so there's no build step. That means erasable syntax only (no `enum`, `namespace` or constructor parameter properties) and relative imports that end in `.ts`. Tests live in `packages/<name>/test/`.

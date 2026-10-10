@@ -1,0 +1,14 @@
+{
+  "name": "skyros",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Persistent AI agents that remember.",
+  "license": "Apache-2.0",
+  "type": "module",
+  "engines": {
+    "node": ">=24"
+  },
+  "exports": {
+    ".": "./src/index.ts"
+  }
+}

@@ -7,5 +7,12 @@
 *.p12
 *.pfx
 
-# Personal agent settings
+# Dependencies and build output
+node_modules/
+dist/
+coverage/
+*.tsbuildinfo
+
+# Personal agent settings and agent worktrees
 .claude/settings.local.json
+.claude/worktrees/

@@ -13,7 +13,8 @@
 /docs/governance/    @A1zen-s
 /docs/rfcs/          @A1zen-s
 
-# Dependency manifests and lockfiles, wherever they live
+# Dependency manifests, lockfiles and package-manager config, wherever they live
+.npmrc               @A1zen-s
 package.json         @A1zen-s
 package-lock.json    @A1zen-s
 pnpm-lock.yaml       @A1zen-s

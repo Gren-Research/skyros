@@ -103,7 +103,9 @@ async function mintToken(app) {
     method: "POST",
     body: JSON.stringify({ repositories: [REPO] }),
   });
-  if (typeof token !== "string" || token.length === 0) throw new Failure("GitHub returned no token");
+  if (typeof token !== "string" || token.length === 0) {
+    throw new Failure("GitHub returned no token");
+  }
   return token;
 }
 
