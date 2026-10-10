@@ -83,9 +83,9 @@ Create: `ready`, `in-progress`, `needs-owner`, `risk:low`, `risk:normal`, `risk:
 
 ## 8. Running the agents
 
-**Phase 0 (now).** Two separate agent sessions, started by you, each with its own app token:
-- **Builder:** "Work on issue #N."
-- **Reviewer:** a different terminal and a fresh session: "You are the Reviewer. Follow docs/governance/reviewer.md. Review PR #N." Use a different model from the Builder if you can: another Claude model, or another vendor's agent.
+**Phase 0 (now).** Agent sessions on your PC, each acting under its own app:
+- **Builder:** a session you start: "Work on issue #N."
+- **Reviewer:** a fresh session with none of the Builder's context, at `xhigh` reasoning effort ([AGENTS.md §2](../../AGENTS.md#2-roles)), on a different model from the Builder if you can (another Claude model, or another vendor's agent), told only: "You are the Reviewer. Follow docs/governance/reviewer.md. Review PR #N." The Builder's session may start it as a subagent with exactly that prompt, plus facts about the machine (where the repository is, how to act as `skyros-reviewer`, that the machine isn't a sandbox) and nothing about the PR. You can also start one yourself in a separate terminal.
 
 **Phase 1.** The Reviewer runs automatically when a PR is marked ready for review (a CI job using the reviewer app). PRs from forks still wait for you.
 
