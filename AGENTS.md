@@ -83,7 +83,16 @@ New subsystems, data formats, changes to the security model, or anything hard to
 
 ## 8. Commands
 
-Node 24 and npm workspaces ([RFC 0003](docs/rfcs/0003-stack.md)). Run from the repository root:
+**Act on GitHub only as your own role's app:** never as the Owner, whose `gh` and git logins may be active on the machine, and never as another role's app. Run every `gh` command and every `git push` through `scripts/as-app.mjs`, from the repository root. It mints your app's one-hour token, and if it can't, the command doesn't run ([setup §2](docs/governance/github-setup.md#2-two-github-apps-two-agent-identities)):
+
+```sh
+node scripts/as-app.mjs skyros-builder gh pr create ...
+node scripts/as-app.mjs skyros-builder git push
+```
+
+The Reviewer uses `skyros-reviewer`. Builders commit as `skyros-builder[bot] <340449339+skyros-builder[bot]@users.noreply.github.com>`.
+
+**Build and test.** Node 24 and npm workspaces ([RFC 0003](docs/rfcs/0003-stack.md)). Run from the repository root:
 
 ```sh
 npm ci             # install exactly what the lockfile says
