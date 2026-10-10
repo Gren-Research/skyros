@@ -22,7 +22,7 @@ Humans follow the same rules; [CONTRIBUTING.md](CONTRIBUTING.md) explains the re
 | **Builder** | Any agent doing implementation work | Claim `ready` issues, branch, commit, open PRs, respond to review | Push to `main`, approve or merge, start work on issues that aren't `ready` |
 | **Reviewer** | One dedicated agent with its own identity | Review, request changes, approve, **merge** | Write code on a PR it reviews; review its own work or changes to its own charter |
 
-The Reviewer's full charter is in [docs/governance/reviewer.md](docs/governance/reviewer.md). Every Reviewer runs at `xhigh` reasoning effort, never lower (Owner rule). Whoever starts it sets this: the Owner, a Builder's session, or CI.
+The Reviewer's full charter is in [docs/governance/reviewer.md](docs/governance/reviewer.md).
 
 ## 3. Doing a piece of work (Builder)
 
@@ -83,11 +83,11 @@ New subsystems, data formats, changes to the security model, or anything hard to
 
 ## 8. Commands
 
-**Act on GitHub as your own app, never as the Owner.** The Owner's `gh` login may be active on the machine, so every `gh` command and `git push` must carry your app's one-hour token ([setup §2](docs/governance/github-setup.md#2-two-github-apps-two-agent-identities)). Agent shells usually don't keep variables between commands, so prefix each one:
+**Act on GitHub only as your own role's app:** never as the Owner, whose `gh` and git logins may be active on the machine, and never as another role's app. Run every `gh` command and every `git push` through `scripts/as-app.mjs`, from the repository root. It mints your app's one-hour token, and if it can't, the command doesn't run ([setup §2](docs/governance/github-setup.md#2-two-github-apps-two-agent-identities)):
 
 ```sh
-GH_TOKEN=$(node scripts/gh-app-token.mjs skyros-builder) gh pr create ...
-GH_TOKEN=$(node scripts/gh-app-token.mjs skyros-builder) git -c credential.helper= -c 'credential.helper=!gh auth git-credential' push
+node scripts/as-app.mjs skyros-builder gh pr create ...
+node scripts/as-app.mjs skyros-builder git push
 ```
 
 The Reviewer uses `skyros-reviewer`. Builders commit as `skyros-builder[bot] <340449339+skyros-builder[bot]@users.noreply.github.com>`.

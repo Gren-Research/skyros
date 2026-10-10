@@ -7,6 +7,10 @@
 
 An agent is a persistent worker with its own identity, memory, skills and permissions; the model is only its engine. Agents run on the user's machine and wake on schedules, events or the user. They share everything they learn, speak up whenever they notice something useful, earn freedom by proving themselves, and can be forked and merged like branches.
 
+## Motivation
+
+An assistant that starts every session blank can't grow into a colleague. The Owner wants several agents, each with its own job (a developer, a personal assistant), that keep their own memory, keep working when nobody is watching, and earn more freedom as they prove themselves. [RFC 0001](0001-memory.md) gives each of them a memory; this RFC defines the agent around that memory.
+
 ## What an agent is
 
 ```
@@ -66,6 +70,24 @@ Permissions are per action type (read, edit files, run commands, send messages, 
 - **v1: the user's PC.** A small background service runs the agents and the memory engine, and Claude Code connects to it through hooks and MCP. Agents wake on schedules, events (file changes; later, new email or calendar events) or the user. When the PC sleeps, agents sleep, and missed schedules run on wake.
 - **v2: an always-on host** (a small cloud server or a home machine) for agents that must act while the PC is off. Same code.
 - **Several devices:** one memory, synced through an encrypted private git remote. Logs are append-only, so syncing them never conflicts, and sleep rebuilds derived memory after a sync. The phone is a window onto the agents, not a second brain.
+
+## Alternatives considered
+
+- **One general agent.** Simpler, but it needs one charter and one set of permissions for everything: the coding agent would hold the keys to email. Separate agents keep charters short and permissions narrow, and sharing everything keeps them from being strangers to each other.
+- **Separate memories per agent.** Stronger isolation, but the user would have to repeat themselves to every agent. The Owner chose to share everything.
+- **Agents in the cloud from day one.** Always on, but the user's memory would live on someone else's machine before per-memory encryption exists ([RFC 0001](0001-memory.md#forgetting-for-real)). The always-on host comes in v2.
+- **Fixed permissions.** Either too timid to be useful or too free to be safe. Earned trust starts cautious and widens only with evidence.
+
+## Risks & security
+
+- **Shared memory is shared exposure.** With everything shared, one compromised agent can read all memory. Untrusted content is stored as information, never as instructions ([RFC 0001](0001-memory.md#poisoning)). Sensitive information about other people never goes into outgoing messages without the user's OK. Outward-facing and irreversible actions always ask first.
+- **Earned trust can be gamed.** An agent could pile up approvals on trivial actions. Approvals count per action type, one mistake demotes immediately, and irreversible actions never promote on their own.
+- **Speaking up freely can turn into noise.** Agents learn from the user's reactions, "Not now" pauses every agent, and simultaneous messages arrive as one bundle.
+- **The background service runs with the user's permissions.** It acts only through each agent's trust levels, and every action lands in that agent's log ([RFC 0001](0001-memory.md#write-path)).
+
+## Open questions
+
+None blocking. The agent problems P15–P19 are decided ([open problems](../ideas/open-problems.md)). Building starts after the memory MVP ([RFC 0001](0001-memory.md#mvp)).
 
 ## Small decisions
 

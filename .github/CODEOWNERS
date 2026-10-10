@@ -27,4 +27,7 @@ Cargo.lock           @A1zen-s
 go.mod               @A1zen-s
 go.sum               @A1zen-s
 
+# Agent identity: runs commands with the GitHub App keys (docs/governance/github-setup.md §2)
+/scripts/as-app.mjs  @A1zen-s
+
 # Add as they appear: memory and privacy code, permissions and sandboxing, agent charters and prompts.

@@ -1,6 +1,6 @@
 # GitHub setup (one-time, for the Owner)
 
-Rules written in Markdown are suggestions; repository settings are enforcement. This page turns [AGENTS.md](../../AGENTS.md) into settings GitHub enforces, so the rules hold even when an agent is confused, wrong, or compromised.
+Rules written in Markdown are suggestions; repository settings are enforcement. This page turns [AGENTS.md](../../AGENTS.md) into settings GitHub enforces, so the rules hold even when an agent is confused, wrong, or compromised. One gap remains while both agent keys live on your PC (§2).
 
 Setting names match GitHub's UI at the time of writing. If one has moved, look for the same option nearby.
 
@@ -22,9 +22,10 @@ GitHub never lets an account approve its own pull request. If the Builder and th
 - Install both apps on **this repository only**.
 - Register them through GitHub's app-manifest flow, which hands each private key straight to your PC, so nobody copies a key by hand.
 - The keys live on your PC in `~/.skyros/secrets/github/` (`<app>.pem`, plus `<app>.json` with the app's client and installation IDs), never in the repo or a synced folder. Agents need them to mint tokens. Keep a backup in a password manager. If a key may have leaked, generate a new one in the app's settings and delete the old one.
-- Agents get a one-hour installation token from [`scripts/gh-app-token.mjs`](../../scripts/gh-app-token.mjs) and pass it as `GH_TOKEN`, which the `gh` CLI picks up ([AGENTS.md §8](../../AGENTS.md#8-commands)). Your own `gh` login on the PC is for Owner actions only.
+- Agents act as their app through [`scripts/as-app.mjs`](../../scripts/as-app.mjs), which runs a command with a one-hour installation token ([AGENTS.md §8](../../AGENTS.md#8-commands)). It fails closed: without a token the command doesn't run, and the command can't fall back to your own `gh` or git login, which is for Owner actions only.
 - Without the **Workflows** permission, GitHub itself rejects any push from these apps that changes `.github/workflows/`. CI changes go through you.
 - Why apps rather than extra user accounts: least privilege, short-lived tokens, no passwords, and every action is attributed (`skyros-builder[bot]`).
+- **The Phase 0 gap.** While both keys sit on your PC, any agent running as you can read either one, so a Builder *could* act as the Reviewer and approve and merge its own `risk:low` or `risk:normal` PR. GitHub can't tell the difference; only AGENTS.md §8 forbids it. Your approval on `risk:high` PRs holds regardless. Phase 1 (§8) closes the gap: the Reviewer runs in CI with its key stored as a GitHub secret, and the key leaves your PC.
 
 ## 3. CODEOWNERS
 
@@ -49,7 +50,7 @@ Settings → Branches → Add branch protection rule → pattern `main`:
 - [ ] Allow force pushes (leave off)
 - [ ] Allow deletions (leave off)
 
-Result: the Builder can open PRs but can't merge; the Reviewer can merge only approved, green PRs; `risk:high` paths also need your approval.
+Result: `skyros-builder` can open PRs but can't merge; only `skyros-reviewer` can merge, and only approved, green PRs; `risk:high` paths also need your approval. (Mind the Phase 0 gap in §2.)
 
 **Your own `risk:high` PRs.** You're the only code owner and GitHub won't let you approve your own PR, so a `risk:high` PR you author can't satisfy "Require review from Code Owners". Prefer asking a Builder to make the change: you approve it and the Reviewer merges. If you must author it yourself, get the Reviewer's approval, then turn off "Do not allow bypassing the above settings", merge, turn it back on, and comment on the PR explaining why. That's the break-glass path in [CONTRIBUTING.md](../../CONTRIBUTING.md#break-glass).
 
@@ -84,9 +85,9 @@ Create: `ready`, `in-progress`, `needs-owner`, `risk:low`, `risk:normal`, `risk:
 
 ## 8. Running the agents
 
-**Phase 0 (now).** Agent sessions on your PC, each acting under its own app token:
-- **Builder:** a session you start: "Work on issue #N."
-- **Reviewer:** a fresh session with none of the Builder's context, at `xhigh` reasoning effort (never lower; [AGENTS.md §2](../../AGENTS.md#2-roles)), on a different model from the Builder where possible (another Claude model, or another vendor's agent), given only: "You are the Reviewer. Follow docs/governance/reviewer.md. Review PR #N." The Builder's session may start it as a subagent with exactly that prompt plus the facts it needs to work on the machine (where the repository is, how to get its token, that the machine isn't a sandbox) and nothing about the PR itself; you can also start one yourself in a separate terminal.
+**Phase 0 (now).** Two separate agent sessions, started by you, each with its own app token:
+- **Builder:** "Work on issue #N."
+- **Reviewer:** a different terminal and a fresh session: "You are the Reviewer. Follow docs/governance/reviewer.md. Review PR #N." Use a different model from the Builder if you can: another Claude model, or another vendor's agent.
 
 **Phase 1.** The Reviewer runs automatically when a PR is marked ready for review (a CI job using the reviewer app). PRs from forks still wait for you.
 
