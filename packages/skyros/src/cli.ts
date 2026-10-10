@@ -3,7 +3,7 @@
 import { createInterface } from "node:readline/promises";
 import { fileURLToPath } from "node:url";
 import { type CaptureResult, captureSession } from "./capture.ts";
-import { claudeSettingsPath, installHook } from "./claude-code.ts";
+import { claudeSettingsPath, installHook, SESSION_END_TIMEOUT_SECONDS } from "./claude-code.ts";
 import { skyrosHome } from "./home.ts";
 
 const USAGE = `usage:
@@ -61,9 +61,16 @@ async function install(confirmed: boolean): Promise<number> {
     const prompt = createInterface({ input: process.stdin, output: process.stdout });
     const answer = await prompt.question("Add it? [y/N] ");
     prompt.close();
-    if (!/^y(es)?$/i.test(answer.trim())) return 1;
+    if (!/^y(es)?$/i.test(answer.trim())) {
+      console.log("Nothing changed.");
+      return 1;
+    }
   }
-  const outcome = installHook(settings, "SessionEnd", command);
+  const outcome = installHook(settings, "SessionEnd", {
+    type: "command",
+    command,
+    timeout: SESSION_END_TIMEOUT_SECONDS,
+  });
   console.log(outcome === "installed" ? "Installed." : "Already installed; nothing changed.");
   return 0;
 }

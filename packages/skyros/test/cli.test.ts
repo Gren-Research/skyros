@@ -66,7 +66,10 @@ describe("skyros CLI", () => {
     const install = run(["install", "claude-code", "--yes"]);
     expect(install.status).toBe(0);
     const settings = JSON.parse(readFileSync(join(root, "claude", "settings.json"), "utf8"));
-    expect(settings.hooks.SessionEnd[0].hooks[0].command).toMatch(/cli\.ts" hook session-end$/);
+    const [hook] = settings.hooks.SessionEnd[0].hooks;
+    expect(hook.command).toMatch(/cli\.ts" hook session-end$/);
+    // SessionEnd hooks get 1.5 seconds unless they ask for more, up to 60.
+    expect(hook.timeout).toBe(60);
   });
 
   it("explains its usage on unknown commands", () => {
