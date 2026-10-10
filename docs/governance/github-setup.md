@@ -86,7 +86,7 @@ Create: `ready`, `in-progress`, `needs-owner`, `risk:low`, `risk:normal`, `risk:
 
 **Phase 0 (now).** Agent sessions on your PC, each acting under its own app token:
 - **Builder:** a session you start: "Work on issue #N."
-- **Reviewer:** a fresh session with none of the Builder's context, on a different model from the Builder where possible (another Claude model, or another vendor's agent), given only: "You are the Reviewer. Follow docs/governance/reviewer.md. Review PR #N." The Builder's session may start it as a subagent with exactly that prompt plus the facts it needs to work on the machine (where the repository is, how to get its token, that the machine isn't a sandbox) and nothing about the PR itself; you can also start one yourself in a separate terminal.
+- **Reviewer:** a fresh session with none of the Builder's context, at `xhigh` reasoning effort (never lower; [AGENTS.md §2](../../AGENTS.md#2-roles)), on a different model from the Builder where possible (another Claude model, or another vendor's agent), given only: "You are the Reviewer. Follow docs/governance/reviewer.md. Review PR #N." The Builder's session may start it as a subagent with exactly that prompt plus the facts it needs to work on the machine (where the repository is, how to get its token, that the machine isn't a sandbox) and nothing about the PR itself; you can also start one yourself in a separate terminal.
 
 **Phase 1.** The Reviewer runs automatically when a PR is marked ready for review (a CI job using the reviewer app). PRs from forks still wait for you.
 

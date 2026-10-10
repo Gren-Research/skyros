@@ -22,7 +22,7 @@ Humans follow the same rules; [CONTRIBUTING.md](CONTRIBUTING.md) explains the re
 | **Builder** | Any agent doing implementation work | Claim `ready` issues, branch, commit, open PRs, respond to review | Push to `main`, approve or merge, start work on issues that aren't `ready` |
 | **Reviewer** | One dedicated agent with its own identity | Review, request changes, approve, **merge** | Write code on a PR it reviews; review its own work or changes to its own charter |
 
-The Reviewer's full charter is in [docs/governance/reviewer.md](docs/governance/reviewer.md).
+The Reviewer's full charter is in [docs/governance/reviewer.md](docs/governance/reviewer.md). Every Reviewer runs at `xhigh` reasoning effort, never lower (Owner rule). Whoever starts it sets this: the Owner, a Builder's session, or CI.
 
 ## 3. Doing a piece of work (Builder)
 
