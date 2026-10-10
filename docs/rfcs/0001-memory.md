@@ -228,7 +228,7 @@ Sketch:
   index.sqlite                   # derived; rebuildable
 ```
 
-A session's log is dated by its first message, in UTC, so its path never changes. For a Claude Code session, line N of the log is line N of the transcript with secrets redacted, and the session's subagents are logged beside it in `09-<session-id>/subagents/`.
+A session's log is dated by its first message, in UTC, so its path never changes. For a Claude Code session, line N of the log is line N of the transcript with secrets redacted, and the session's subagents are logged beside it in `09-<session-id>/subagents/`. Only the user can read what Skyros writes: on Linux and macOS, folders it creates are `0700` and files `0600`.
 
 ## Many agents, separate minds
 

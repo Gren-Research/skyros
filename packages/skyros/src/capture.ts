@@ -91,21 +91,27 @@ export function captureSession(options: CaptureOptions): CaptureResult {
 
 type MirrorOutcome = { appended: number; counts: RedactionCounts } | "conflict";
 
+// The log holds every prompt, file and command output, so only its owner may read it.
+const PRIVATE_DIR = 0o700;
+const PRIVATE_FILE = 0o600;
+
 /** Brings `target` up to date with the source lines, appending only what's new. */
 function mirror(source: string[], target: string): MirrorOutcome {
   let logged: string[] = [];
+  let partialFrom: number | undefined;
   if (existsSync(target)) {
     const text = readFileSync(target, "utf8");
     logged = completeLines(text);
     const complete = text.lastIndexOf("\n") + 1;
-    // A run that died mid-write leaves a partial last line: drop it and write it again.
-    if (complete < text.length) truncateSync(target, Buffer.byteLength(text.slice(0, complete)));
+    if (complete < text.length) partialFrom = Buffer.byteLength(text.slice(0, complete));
   }
 
   const last = logged.length - 1;
   if (logged.length > source.length || (last >= 0 && !sameLine(logged[last], source[last]))) {
     return "conflict";
   }
+  // A run that died mid-write leaves a partial last line: drop it and write it again.
+  if (partialFrom !== undefined) truncateSync(target, partialFrom);
 
   const counts: RedactionCounts = {};
   const fresh = source.slice(logged.length).map((line) => {
@@ -115,13 +121,13 @@ function mirror(source: string[], target: string): MirrorOutcome {
   });
   if (fresh.length === 0) return { appended: 0, counts };
 
-  mkdirSync(dirname(target), { recursive: true });
+  mkdirSync(dirname(target), { recursive: true, mode: PRIVATE_DIR });
   if (logged.length === 0) {
     // New log: write it whole, then rename, so a crash never leaves half a file behind.
-    writeFileSync(`${target}.partial`, fresh.join(""));
+    writeFileSync(`${target}.partial`, fresh.join(""), { mode: PRIVATE_FILE });
     renameSync(`${target}.partial`, target);
   } else {
-    appendFileSync(target, fresh.join(""));
+    appendFileSync(target, fresh.join(""), { mode: PRIVATE_FILE });
   }
   return { appended: fresh.length, counts };
 }

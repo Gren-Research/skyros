@@ -5,6 +5,7 @@ import {
   mkdtempSync,
   readFileSync,
   rmSync,
+  statSync,
   writeFileSync,
 } from "node:fs";
 import { tmpdir } from "node:os";
@@ -114,6 +115,19 @@ describe("captureSession", () => {
     expect(readLog()).toBe(`${message(1)}\n${message(2)}\n`);
   });
 
+  it("leaves a conflicting log byte for byte, even a partial last line", () => {
+    const path = transcript([message(1), message(2)]);
+    mkdirSync(join(home, logPath, ".."), { recursive: true });
+    const before = `${message(1)}
+${message(2)}
+${message(3).slice(0, 20)}`;
+    writeFileSync(join(home, logPath), before);
+    transcript([message(1), message(5), message(6)]);
+
+    expect(captureSession({ transcriptPath: path, home }).conflicts).toEqual([join(home, logPath)]);
+    expect(readLog()).toBe(before);
+  });
+
   it("captures subagent transcripts beside the session", () => {
     const path = transcript([message(1)]);
     const subagents = join(projects, SESSION, "subagents");
@@ -123,6 +137,32 @@ describe("captureSession", () => {
     expect(captureSession({ transcriptPath: path, home }).appended).toBe(2);
     const subagentLog = join(home, logPath.replace(".jsonl", ""), "subagents", "agent-a1.jsonl");
     expect(readFileSync(subagentLog, "utf8")).toBe(`${message(2)}\n`);
+  });
+
+  it.skipIf(process.platform === "win32")("keeps the logs readable by their owner only", () => {
+    const path = transcript([message(1)]);
+    const subagents = join(projects, SESSION, "subagents");
+    mkdirSync(subagents, { recursive: true });
+    writeFileSync(
+      join(subagents, "agent-a1.jsonl"),
+      `${message(2)}
+`,
+    );
+    captureSession({ transcriptPath: path, home });
+    appendFileSync(
+      path,
+      `${message(3)}
+`,
+    );
+    captureSession({ transcriptPath: path, home });
+
+    const mode = (...parts: string[]) => statSync(join(home, ...parts)).mode & 0o777;
+    const session = logPath.replace(".jsonl", "");
+    expect(mode()).toBe(0o700);
+    expect(mode(logPath, "..")).toBe(0o700);
+    expect(mode(logPath)).toBe(0o600);
+    expect(mode(session, "subagents")).toBe(0o700);
+    expect(mode(session, "subagents", "agent-a1.jsonl")).toBe(0o600);
   });
 
   it("writes nothing for a transcript with no messages yet", () => {
