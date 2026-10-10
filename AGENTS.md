@@ -83,4 +83,13 @@ New subsystems, data formats, changes to the security model, or anything hard to
 
 ## 8. Commands
 
-None yet. Add the build, test, lint and format commands here when the first code lands (stack: [RFC 0003](docs/rfcs/0003-stack.md)).
+**Act on GitHub as your own app, never as the Owner.** The Owner's `gh` login may be active on the machine, so every `gh` command and `git push` must carry your app's one-hour token ([setup §2](docs/governance/github-setup.md#2-two-github-apps-two-agent-identities)). Agent shells usually don't keep variables between commands, so prefix each one:
+
+```sh
+GH_TOKEN=$(node scripts/gh-app-token.mjs skyros-builder) gh pr create ...
+GH_TOKEN=$(node scripts/gh-app-token.mjs skyros-builder) git -c credential.helper= -c 'credential.helper=!gh auth git-credential' push
+```
+
+The Reviewer uses `skyros-reviewer`. Builders commit as `skyros-builder[bot] <340449339+skyros-builder[bot]@users.noreply.github.com>`.
+
+Build, test, lint and format commands go here when the first code lands (stack: [RFC 0003](docs/rfcs/0003-stack.md)).

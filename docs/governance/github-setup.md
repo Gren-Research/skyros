@@ -16,12 +16,13 @@ GitHub never lets an account approve its own pull request. If the Builder and th
 
 | App | Repository permissions | Never grant |
 |---|---|---|
-| `skyros-builder` | Contents: read & write · Pull requests: read & write · Issues: read & write · Metadata: read | Administration, Workflows, Secrets, Actions |
+| `skyros-builder` | Contents: read & write · Pull requests: read & write · Issues: read & write · Checks: read · Commit statuses: read · Metadata: read | Administration, Workflows, Secrets, Actions |
 | `skyros-reviewer` | Contents: read & write (needed to merge) · Pull requests: read & write · Issues: read & write (labels) · Checks: read · Commit statuses: read · Metadata: read | Administration, Workflows, Secrets, Actions |
 
 - Install both apps on **this repository only**.
-- Keep their private keys in a password manager, never in the repo or a synced folder.
-- At the start of each session the agent gets a short-lived installation token (valid for one hour) exported as `GH_TOKEN`, which the `gh` CLI picks up. A small token-minting script makes a good first issue.
+- Register them through GitHub's app-manifest flow, which hands each private key straight to your PC, so nobody copies a key by hand.
+- The keys live on your PC in `~/.skyros/secrets/github/` (`<app>.pem`, plus `<app>.json` with the app's client and installation IDs), never in the repo or a synced folder. Agents need them to mint tokens. Keep a backup in a password manager. If a key may have leaked, generate a new one in the app's settings and delete the old one.
+- Agents get a one-hour installation token from [`scripts/gh-app-token.mjs`](../../scripts/gh-app-token.mjs) and pass it as `GH_TOKEN`, which the `gh` CLI picks up ([AGENTS.md §8](../../AGENTS.md#8-commands)). Your own `gh` login on the PC is for Owner actions only.
 - Without the **Workflows** permission, GitHub itself rejects any push from these apps that changes `.github/workflows/`. CI changes go through you.
 - Why apps rather than extra user accounts: least privilege, short-lived tokens, no passwords, and every action is attributed (`skyros-builder[bot]`).
 
@@ -83,9 +84,9 @@ Create: `ready`, `in-progress`, `needs-owner`, `risk:low`, `risk:normal`, `risk:
 
 ## 8. Running the agents
 
-**Phase 0 (now).** Two separate agent sessions, started by you, each with its own app token:
-- **Builder:** "Work on issue #N."
-- **Reviewer:** a different terminal and a fresh session: "You are the Reviewer. Follow docs/governance/reviewer.md. Review PR #N." Use a different model from the Builder if you can: another Claude model, or another vendor's agent.
+**Phase 0 (now).** Agent sessions on your PC, each acting under its own app token:
+- **Builder:** a session you start: "Work on issue #N."
+- **Reviewer:** a fresh session with none of the Builder's context, on a different model from the Builder where possible (another Claude model, or another vendor's agent), given only: "You are the Reviewer. Follow docs/governance/reviewer.md. Review PR #N." The Builder's session may start it as a subagent with exactly that prompt plus how to get its token; you can also start one yourself in a separate terminal.
 
 **Phase 1.** The Reviewer runs automatically when a PR is marked ready for review (a CI job using the reviewer app). PRs from forks still wait for you.
 

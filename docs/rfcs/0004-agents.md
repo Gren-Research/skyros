@@ -1,6 +1,6 @@
 # RFC 0004: Agents
 
-- **Status:** Draft
+- **Status:** Accepted (2026-10-10)
 - **Created:** 2026-10-10
 
 ## Summary
