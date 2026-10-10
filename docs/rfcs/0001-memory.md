@@ -1,6 +1,6 @@
 # RFC 0001: Memory that forgets nothing
 
-- **Status:** Draft, under discussion
+- **Status:** Accepted (2026-10-10)
 - **Created:** 2026-10-09
 - **Updated:** 2026-10-10: added accepted ideas 1–7 from the [ideas ledger](../ideas/memory.md), decisions on [open problems](../ideas/open-problems.md) P1–P14, and the Owner's 120-day raw-log retention
 
