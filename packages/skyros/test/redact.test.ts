@@ -55,6 +55,11 @@ describe("redactText", () => {
     );
   });
 
+  it("leaves a BEGIN line with no key after it alone", () => {
+    const text = `PEM files start with ${fake.privateKey.split("\n")[0]}\nand end with an END line.`;
+    expect(redactText(text)).toEqual({ text, counts: {} });
+  });
+
   it("redacts only the password in a URL", () => {
     expect(redactText("postgres://admin:Sup3rSecret@db.example.com:5432/app").text).toBe(
       "postgres://admin:[REDACTED:url-password]@db.example.com:5432/app",

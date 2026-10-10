@@ -22,8 +22,9 @@ const PATTERNS: ReadonlyArray<readonly [kind: string, pattern: RegExp]> = [
     "private-key",
     /-----BEGIN [A-Z0-9 ]*PRIVATE KEY-----(?:(?!-----BEGIN )[\s\S])*?-----END [A-Z0-9 ]*PRIVATE KEY-----/g,
   ],
-  // A key cut off before its END line: the BEGIN line and the base64 lines after it.
-  ["private-key", /-----BEGIN [A-Z0-9 ]*PRIVATE KEY-----(?:\r?\n[A-Za-z0-9+/=]+)*/g],
+  // A key cut off before its END line: the BEGIN line and the base64 lines after it. A BEGIN
+  // line with no key material after it, as in docs and code, is left alone.
+  ["private-key", /-----BEGIN [A-Z0-9 ]*PRIVATE KEY-----(?:\r?\n[A-Za-z0-9+/=]+(?=\r?\n|$))+/g],
   ["anthropic-key", /\bsk-ant-[A-Za-z0-9_-]{20,}/g],
   ["openai-key", /\bsk-(?:proj-|svcacct-|admin-)?[A-Za-z0-9_-]{32,}/g],
   ["github-token", /\b(?:gh[pousr]_[A-Za-z0-9]{36,}|github_pat_[A-Za-z0-9_]{50,})/g],
