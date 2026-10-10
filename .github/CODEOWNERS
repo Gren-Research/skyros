@@ -1,0 +1,30 @@
+# Changes to these paths need the Owner's approval before the Reviewer agent may merge.
+# The Owner is @A1zen-s, an owner of the Gren-Research organization (docs/governance/github-setup.md §3).
+# Keep in sync with AGENTS.md §4. When several patterns match, the last one wins.
+
+/.github/            @A1zen-s
+/.gitignore          @A1zen-s
+/.gitattributes      @A1zen-s
+/AGENTS.md           @A1zen-s
+/CLAUDE.md           @A1zen-s
+/CONTRIBUTING.md     @A1zen-s
+/SECURITY.md         @A1zen-s
+/LICENSE             @A1zen-s
+/docs/governance/    @A1zen-s
+/docs/rfcs/          @A1zen-s
+
+# Dependency manifests and lockfiles, wherever they live
+package.json         @A1zen-s
+package-lock.json    @A1zen-s
+pnpm-lock.yaml       @A1zen-s
+yarn.lock            @A1zen-s
+bun.lock             @A1zen-s
+pyproject.toml       @A1zen-s
+uv.lock              @A1zen-s
+requirements*.txt    @A1zen-s
+Cargo.toml           @A1zen-s
+Cargo.lock           @A1zen-s
+go.mod               @A1zen-s
+go.sum               @A1zen-s
+
+# Add as they appear: memory and privacy code, permissions and sandboxing, agent charters and prompts.

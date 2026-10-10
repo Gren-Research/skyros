@@ -1,0 +1,11 @@
+# Secrets: never commit these (see SECURITY.md)
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+
+# Personal agent settings
+.claude/settings.local.json
