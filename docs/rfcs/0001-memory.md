@@ -209,7 +209,7 @@ The importer reads whatever Claude Code still has. Claude Code keeps 30 days of 
 Sketch:
 
 ```
-~/.skyros/                       # private; never inside the public repo
+~/.skyros/                       # private; never inside the public repo ($SKYROS_HOME moves it)
   agents/
     assistant/
       charter.md                 # identity, job, boundaries, tone
@@ -227,6 +227,8 @@ Sketch:
     projects/<name>/
   index.sqlite                   # derived; rebuildable
 ```
+
+A session's log is dated by its first message, in UTC, so its path never changes. For a Claude Code session, line N of the log is line N of the transcript with secrets redacted, and the session's subagents are logged beside it in `09-<session-id>/subagents/`.
 
 ## Many agents, separate minds
 
