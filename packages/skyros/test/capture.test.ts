@@ -118,9 +118,7 @@ describe("captureSession", () => {
   it("leaves a conflicting log byte for byte, even a partial last line", () => {
     const path = transcript([message(1), message(2)]);
     mkdirSync(join(home, logPath, ".."), { recursive: true });
-    const before = `${message(1)}
-${message(2)}
-${message(3).slice(0, 20)}`;
+    const before = [message(1), message(2), message(3).slice(0, 20)].join("\n");
     writeFileSync(join(home, logPath), before);
     transcript([message(1), message(5), message(6)]);
 
@@ -143,17 +141,9 @@ ${message(3).slice(0, 20)}`;
     const path = transcript([message(1)]);
     const subagents = join(projects, SESSION, "subagents");
     mkdirSync(subagents, { recursive: true });
-    writeFileSync(
-      join(subagents, "agent-a1.jsonl"),
-      `${message(2)}
-`,
-    );
+    writeFileSync(join(subagents, "agent-a1.jsonl"), `${message(2)}\n`);
     captureSession({ transcriptPath: path, home });
-    appendFileSync(
-      path,
-      `${message(3)}
-`,
-    );
+    appendFileSync(path, `${message(3)}\n`);
     captureSession({ transcriptPath: path, home });
 
     const mode = (...parts: string[]) => statSync(join(home, ...parts)).mode & 0o777;
